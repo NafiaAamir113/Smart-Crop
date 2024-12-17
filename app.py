@@ -129,11 +129,11 @@ def load_and_preprocess_data():
 # Load the dataset
 data = load_and_preprocess_data()
 
-# Define feature columns
-feature_columns = ['N', 'P', 'K', 'rainfall', 'temperature', 'humidity', 'pH']
+# Define feature columns (updated to match your dataset columns)
+feature_columns = ['N', 'P', 'K', 'rainfall', 'temperature', 'humidity', 'ph']
 
 # Define target variable
-target = 'crop_type'
+target = 'label'  # Your target variable is 'label' not 'crop_type'
 
 # Model training
 X = data[feature_columns]
@@ -142,16 +142,6 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 model = RandomForestClassifier(n_estimators=100, random_state=42)
 model.fit(X_train, y_train)
-# Check the available columns in the dataset
-st.write("Available columns in the dataset:", data.columns)
-
-# Ensure the columns exist in the dataset
-missing_columns = [col for col in feature_columns if col not in data.columns]
-if missing_columns:
-    st.error(f"Missing columns: {', '.join(missing_columns)}")
-else:
-    X = data[feature_columns]
-
 
 # Streamlit UI setup
 st.title("🌾 AgriSmart Crop Advisor")
@@ -174,13 +164,11 @@ weather_url = f'http://api.openweathermap.org/data/2.5/weather?q={district_input
 weather_response = requests.get(weather_url)
 weather_data = weather_response.json()
 
-# Handle API response and extract temperature
 if 'main' in weather_data:
     temperature = weather_data['main']['temp'] - 273.15  # Convert from Kelvin to Celsius
     st.write(f"🌡️ Current Temperature in {district_input}: {temperature:.2f}°C")
 else:
     st.write("Weather data not available.")
-    temperature = temperature_input  # Fallback to the input temperature
 
 # Prepare input data for prediction
 new_data = pd.DataFrame({
@@ -188,24 +176,10 @@ new_data = pd.DataFrame({
     'P': [P_input],
     'K': [K_input],
     'rainfall': [rainfall_input],
-    'temperature': [temperature],
+    'temperature': [temperature_input],
     'humidity': [humidity_input],
-    'pH': [pH_input]
+    'ph': [pH_input]
 })
-
-# Check if required columns exist
-missing_columns = [col for col in feature_columns if col not in data.columns]
-if missing_columns:
-    st.error(f"Missing columns: {', '.join(missing_columns)}")
-else:
-    # Proceed with processing if all columns are present
-    X = data[feature_columns]
-    y = data[target]
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-    model = RandomForestClassifier(n_estimators=100, random_state=42)
-    model.fit(X_train, y_train)
-
 
 # Make prediction
 predicted_crop = model.predict(new_data)
