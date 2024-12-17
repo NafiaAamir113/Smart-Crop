@@ -138,7 +138,9 @@ if st.button("🚀 Predict Crop"):
     
 # # Footer 
 # st.write("**Developed by Us with 💚 for Smart Agriculture 🚜.**")
- st.markdown("""
+# Footer with Contact or Additional Information
+st.markdown("""
+---
 **Developed by Us with 💚 for Smart Agriculture 🚜.**  
 For more information or support, contact us at [support@agrismart.com](mailto:support@agrismart.com).
 """)
@@ -161,6 +163,15 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
+
+
+
+
+
+
+
+
+
 
 
 
