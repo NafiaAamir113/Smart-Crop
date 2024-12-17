@@ -138,38 +138,12 @@ if st.button("🚀 Predict Crop"):
     
 # # Footer 
 # st.write("**Developed by Us with 💚 for Smart Agriculture 🚜.**")
-# Footer with Contact or Additional Information
-st.markdown("""
----
-**Developed by Us with 💚 for Smart Agriculture 🚜.**  
-For more information or support, contact us at [support@agrismart.com](mailto:support@agrismart.com).
-""")
-
-# Customizing the visual appearance using CSS
-st.markdown("""
-    <style>
-        .css-1v3fvcr {font-family: 'Arial', sans-serif;}
-        .css-1v3fvcr h1 {font-size: 30px; color: #4CAF50; text-align: center;}
-        .stButton>button {
-            background-color: #4CAF50; 
-            color: white; 
-            font-size: 16px; 
-            padding: 10px 24px;
-            border: none;
-            border-radius: 5px;
-        }
-        .stButton>button:hover {
-            background-color: #45a049;
-        }
-    </style>
-""", unsafe_allow_html=True)
-
-
-
-
-
-
-
+# # Footer with Contact or Additional Information
+# st.markdown("""
+# ---
+# **Developed by Us with 💚 for Smart Agriculture 🚜.**  
+# For more information or support, contact us at [support@agrismart.com](mailto:support@agrismart.com).
+# """)
 
 
 
