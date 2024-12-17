@@ -103,11 +103,12 @@
 
 #     # Display result
 #     st.success(f"🌾 **Predicted Crop Type:** {predicted_crop[0]} 🌱")
-#     # st.balloons()
+#     st.balloons()
 
 # # Footer 
+# st.write("**Developed by Us3 with 💚 for Smart Agriculture 🚜.**")
 
-# Step 1: Import necessary libraries
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -210,12 +211,28 @@ if st.button("🚀 Predict Crop"):
     prediction = model.predict(new_data)
     predicted_crop = label_encoder.inverse_transform(prediction)
 
+    # Calculate suitability score (a simple example)
+    suitability_score = 100
+
+    # Reduce suitability score if temperature is not ideal for the predicted crop
+    if temperature < 18 or temperature > 30:
+        suitability_score -= 20  # Reduces the score for extreme temperatures
+
     # Display result
     st.success(f"🌾 **Predicted Crop Type:** {predicted_crop[0]} 🌱")
+    st.write(f"🌟 **Crop Suitability Score:** {suitability_score}/100")
+
+    if suitability_score < 80:
+        st.warning("⚠️ The current conditions are not optimal for the predicted crop. Consider adjusting your parameters (e.g., temperature, irrigation).")
+    else:
+        st.success("✅ The current conditions are ideal for the predicted crop!")
+
     st.balloons()
 
 # Footer 
 st.write("**Developed by Us3 with 💚 for Smart Agriculture 🚜.**")
+st.markdown("Stay sustainable, stay productive! 🌍")
+
 st.markdown("Stay sustainable, stay productive! 🌍")
 
 
