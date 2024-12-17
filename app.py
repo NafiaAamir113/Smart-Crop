@@ -113,156 +113,42 @@
 
 import streamlit as st
 import pandas as pd
-import requests
-import matplotlib.pyplot as plt
-import seaborn as sns
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.model_selection import train_test_split
 
-# Load and preprocess the dataset directly from the script folder in the GitHub repo
-@st.cache_data
-def load_and_preprocess_data():
-    file_path = "Crop(Distric level).csv"  # Ensure this is in the same directory as your script
-    data = pd.read_csv(file_path)
-    return data
-
-# Load the dataset
-data = load_and_preprocess_data()
-
-# Define feature columns (updated to match your dataset columns)
-feature_columns = ['N', 'P', 'K', 'rainfall', 'temperature', 'humidity', 'ph']
-
-# Define target variable
-target = 'label'  # Your target variable is 'label' not 'crop_type'
-
-# Model training
-X = data[feature_columns]
-y = data[target]
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-model = RandomForestClassifier(n_estimators=100, random_state=42)
-model.fit(X_train, y_train)
-
-# Streamlit UI setup
-st.title("🌾 AgriSmart Crop Advisor")
-
-# Input section
-st.sidebar.header("Enter Your District Details")
-
-district_input = st.sidebar.text_input("District Name")
-N_input = st.sidebar.number_input("Nitrogen (N) in Soil", min_value=0, max_value=100, value=50)
-P_input = st.sidebar.number_input("Phosphorus (P) in Soil", min_value=0, max_value=100, value=50)
-K_input = st.sidebar.number_input("Potassium (K) in Soil", min_value=0, max_value=100, value=50)
-rainfall_input = st.sidebar.number_input("Rainfall (mm)", min_value=0, max_value=500, value=100)
-temperature_input = st.sidebar.number_input("Temperature (°C)", min_value=-10, max_value=50, value=25)
-humidity_input = st.sidebar.number_input("Humidity (%)", min_value=0, max_value=100, value=60)
-pH_input = st.sidebar.number_input("Soil pH", min_value=4.0, max_value=8.0, value=6.5)
-
-# Example for weather data and API setup
-api_key = '1fc92ac1aaf1d60b9364553e93b2983a'  # Replace with your OpenWeather API key
-
-# Function to get weather data
-def get_weather(district_input):
-    weather_url = f'http://api.openweathermap.org/data/2.5/weather?q={district_input}&appid={api_key}'
-    weather_response = requests.get(weather_url)
-    
-    # Check if the response is successful
-    if weather_response.status_code == 200:
-        weather_data = weather_response.json()
-        if 'main' in weather_data:
-            # Convert temperature from Kelvin to Celsius
-            temperature = weather_data['main']['temp'] - 273.15
-            return temperature
-        else:
-            st.write(f"Weather data not available for {district_input}.")
-            return None
-    else:
-        st.write(f"Failed to retrieve weather data for {district_input}. HTTP Status Code: {weather_response.status_code}")
-        return None
-
-# Fetch temperature based on user input (district)
-district_input = st.sidebar.text_input("District Name")
-temperature = None
-
-if district_input:
-    temperature = get_weather(district_input)
-
-# Check if temperature is available and handle accordingly
-if temperature is not None:
-    st.write(f"🌡️ Current Temperature in {district_input}: {temperature:.2f}°C")
-    # Now you can safely compare the temperature
-    if temperature > 30:
-        st.write("☀️ Consider crops that thrive in hot climates like Rice or Sorghum.")
-    else:
-        st.write("🌱 Consider cool-weather crops like Wheat or Barley.")
-else:
-    st.write("Unable to retrieve temperature data. Please check the district name or try again later.")
-
-# Prepare input data for prediction
-new_data = pd.DataFrame({
-    'N': [N_input],
-    'P': [P_input],
-    'K': [K_input],
-    'rainfall': [rainfall_input],
-    'temperature': [temperature_input],
-    'humidity': [humidity_input],
-    'ph': [pH_input]
+# Assuming 'data' is the DataFrame you are using for your crop recommendations
+data = pd.DataFrame({
+    'N': [90], 
+    'P': [42], 
+    'K': [43], 
+    'temperature': [20.88], 
+    'humidity': [82.00], 
+    'ph': [6.50], 
+    'rainfall': [202.94], 
+    'label': ['rice'],
+    'district': ['ryk']
 })
 
-# Make prediction
-predicted_crop = model.predict(new_data)
+# If you're using a user input for selecting a district and feature columns, this would look like:
+district_input = st.sidebar.text_input("District Name")
 
-# Confidence score
-prediction_prob = model.predict_proba(new_data)
-confidence = max(prediction_prob[0]) * 100
-st.write(f"🟢 Confidence Level: {confidence:.2f}%")
+# Example logic to filter the data based on district
+filtered_data = data[data['district'] == district_input]
 
-# Crop Details
-crop_details = {
-    "Wheat": "Wheat grows best in loamy soil with good drainage. Requires moderate rainfall and temperature around 15-20°C.",
-    "Rice": "Rice needs flooded fields and warm climates. It requires temperatures around 20-35°C.",
-    # Add more crops and their details here
-}
-
-st.write(f"🌾 **Predicted Crop**: {predicted_crop[0]}")
-st.write(f"🌿 **Crop Information**: {crop_details.get(predicted_crop[0], 'No detailed info available.')}")
+# If data for the selected district exists
+if not filtered_data.empty:
+    st.write(f"Data for district: {district_input}")
+    st.write(filtered_data)
     
-# Feature Importance Visualization
-feature_importances = model.feature_importances_
-importance_df = pd.DataFrame({
-    'Feature': feature_columns,
-    'Importance': feature_importances
-})
-importance_df = importance_df.sort_values(by='Importance', ascending=False)
-
-st.subheader("📊 Feature Importance")
-fig, ax = plt.subplots()
-sns.barplot(x='Importance', y='Feature', data=importance_df, ax=ax)
-st.pyplot(fig)
-
-# User Feedback Loop
-feedback = st.radio("Was the crop prediction helpful?", ('Yes', 'No'))
-if feedback == 'No':
-    st.text_area("Please provide feedback to improve the app:")
-
-# Crop Recommendations Based on Weather
-if temperature > 30:
-    st.write("☀️ Consider crops that thrive in hot climates like Rice or Sorghum.")
+    # Use the features you want for prediction or recommendation (example: N, P, K, etc.)
+    feature_columns = ['N', 'P', 'K', 'humidity', 'ph', 'rainfall']  # Define features
+    X = filtered_data[feature_columns]  # Get features for the selected district
+    
+    # Sample condition to recommend crops based on N, P, K values (example logic)
+    if X['N'].iloc[0] > 50 and X['P'].iloc[0] > 30:
+        st.write("Recommend crop: Rice")
+    else:
+        st.write("Recommend crop: Wheat")
 else:
-    st.write("🌱 Consider cool-weather crops like Wheat or Barley.")
+    st.write("No data found for this district. Please try a different district.")
 
-# Offline Mode (simulate saving predictions locally or sending reports)
-st.sidebar.header("Offline Features")
-offline_option = st.sidebar.radio("Save your prediction?", ('Yes', 'No'))
-if offline_option == 'Yes':
-    st.write("Your prediction will be saved for offline use.")
+# Continue with the rest of your logic for the app
 
-# Mobile-Optimized UI
-st.sidebar.text("For better mobile experience, please make sure the app is optimized with larger buttons and simpler input fields.")
-
-# District-Level Collaboration and Localization
-st.sidebar.header("Collaborate with Local Farmers")
-st.sidebar.text("Share your experiences with others in your district and exchange tips.")
-
-# Final Remarks
-st.write("Thank you for using **AgriSmart Crop Advisor**! Stay connected for more features.")
