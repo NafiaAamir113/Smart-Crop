@@ -137,7 +137,7 @@ if st.button("🚀 Predict Crop"):
         st.write("🌱 Mixed fertilizers can balance the benefits of both organic and chemical options.")
     
 # Footer 
-st.write("**Developed by Us with 💚 for Smart Agriculture 🚜.**")
+                       st.write("**Developed by Us with 💚 for Smart Agriculture 🚜.**")
 
 
 
