@@ -179,6 +179,20 @@ new_data = pd.DataFrame({
     'pH': [pH_input]
 })
 
+# Check if required columns exist
+missing_columns = [col for col in feature_columns if col not in data.columns]
+if missing_columns:
+    st.error(f"Missing columns: {', '.join(missing_columns)}")
+else:
+    # Proceed with processing if all columns are present
+    X = data[feature_columns]
+    y = data[target]
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    model = RandomForestClassifier(n_estimators=100, random_state=42)
+    model.fit(X_train, y_train)
+
+
 # Make prediction
 predicted_crop = model.predict(new_data)
 
