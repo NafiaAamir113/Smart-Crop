@@ -103,7 +103,7 @@ if st.button("🚀 Predict Crop"):
 
     # Display result
     st.success(f"🌾 **Predicted Crop Type:** {predicted_crop[0]} 🌱")
-    st.balloons()
+    # st.balloons()
 
 # Footer 
 st.write("**Developed by Us3 with 💚 for Smart Agriculture 🚜.**")
