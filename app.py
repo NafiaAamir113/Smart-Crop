@@ -142,6 +142,16 @@ X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_
 
 model = RandomForestClassifier(n_estimators=100, random_state=42)
 model.fit(X_train, y_train)
+# Check the available columns in the dataset
+st.write("Available columns in the dataset:", data.columns)
+
+# Ensure the columns exist in the dataset
+missing_columns = [col for col in feature_columns if col not in data.columns]
+if missing_columns:
+    st.error(f"Missing columns: {', '.join(missing_columns)}")
+else:
+    X = data[feature_columns]
+
 
 # Streamlit UI setup
 st.title("🌾 AgriSmart Crop Advisor")
