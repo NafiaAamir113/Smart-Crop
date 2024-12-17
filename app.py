@@ -217,8 +217,7 @@ if st.button("🚀 Predict Crop"):
 # Footer 
 st.write("**Developed by Us3 with 💚 for Smart Agriculture 🚜.**")
 st.markdown("Stay sustainable, stay productive! 🌍")
-st.write("**Developed by Us3 with 💚 for Smart Agriculture 🚜.**")
-st.markdown("Stay sustainable, stay productive! 🌍")
+
 
 
 
