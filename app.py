@@ -158,17 +158,45 @@ temperature_input = st.sidebar.number_input("Temperature (°C)", min_value=-10, 
 humidity_input = st.sidebar.number_input("Humidity (%)", min_value=0, max_value=100, value=60)
 pH_input = st.sidebar.number_input("Soil pH", min_value=4.0, max_value=8.0, value=6.5)
 
-# Weather API Integration (OpenWeather)
-api_key = 'your_api_key'  # Replace this with your actual OpenWeather API key
-weather_url = f'http://api.openweathermap.org/data/2.5/weather?q={district_input}&appid={api_key}'
-weather_response = requests.get(weather_url)
-weather_data = weather_response.json()
+# Example for weather data and API setup
+api_key = '1fc92ac1aaf1d60b9364553e93b2983a'  # Replace with your OpenWeather API key
 
-if 'main' in weather_data:
-    temperature = weather_data['main']['temp'] - 273.15  # Convert from Kelvin to Celsius
+# Function to get weather data
+def get_weather(district_input):
+    weather_url = f'http://api.openweathermap.org/data/2.5/weather?q={district_input}&appid={api_key}'
+    weather_response = requests.get(weather_url)
+    
+    # Check if the response is successful
+    if weather_response.status_code == 200:
+        weather_data = weather_response.json()
+        if 'main' in weather_data:
+            # Convert temperature from Kelvin to Celsius
+            temperature = weather_data['main']['temp'] - 273.15
+            return temperature
+        else:
+            st.write(f"Weather data not available for {district_input}.")
+            return None
+    else:
+        st.write(f"Failed to retrieve weather data for {district_input}. HTTP Status Code: {weather_response.status_code}")
+        return None
+
+# Fetch temperature based on user input (district)
+district_input = st.sidebar.text_input("District Name")
+temperature = None
+
+if district_input:
+    temperature = get_weather(district_input)
+
+# Check if temperature is available and handle accordingly
+if temperature is not None:
     st.write(f"🌡️ Current Temperature in {district_input}: {temperature:.2f}°C")
+    # Now you can safely compare the temperature
+    if temperature > 30:
+        st.write("☀️ Consider crops that thrive in hot climates like Rice or Sorghum.")
+    else:
+        st.write("🌱 Consider cool-weather crops like Wheat or Barley.")
 else:
-    st.write("Weather data not available.")
+    st.write("Unable to retrieve temperature data. Please check the district name or try again later.")
 
 # Prepare input data for prediction
 new_data = pd.DataFrame({
