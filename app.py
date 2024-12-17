@@ -1,4 +1,3 @@
-# Step 1: Import necessary libraries
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import RandomForestClassifier
@@ -17,7 +16,7 @@ st.set_page_config(
 st.title("🌾 AgriSmart Crop Advisor 🌱")
 st.write("""
 Welcome to **AgriSmart Crop Advisor**! This app helps farmers and agricultural consultants predict the best crop to grow 
-based on soil, weather, and location data. 🚜💡
+based on soil, location data, and farming practices. 🚜💡
 """)
 
 # Load and preprocess the dataset
@@ -71,6 +70,11 @@ with col2:
     rainfall = st.number_input("🌧️ Rainfall (mm):", min_value=0.0, max_value=500.0, value=100.0, step=1.0)
     district_input = st.text_input("📍 District Name (e.g., ryk):", "ryk")
 
+# Add Farming Practices (for personalization)
+st.subheader("🌾 Farming Practices")
+irrigation_method = st.selectbox("💧 Irrigation Method:", ["Drip", "Sprinkler", "Flood", "None"])
+fertilizer_type = st.selectbox("🌱 Fertilizer Type:", ["Organic", "Chemical", "Mixed", "None"])
+
 # Predict button
 if st.button("🚀 Predict Crop"):
     # Prepare input data
@@ -81,7 +85,9 @@ if st.button("🚀 Predict Crop"):
         'temperature': [temperature],
         'humidity': [humidity],
         'ph': [ph],
-        'rainfall': [rainfall]
+        'rainfall': [rainfall],
+        'irrigation_method': [irrigation_method],
+        'fertilizer_type': [fertilizer_type]
     })
 
     # Add district columns (one-hot encoded)
@@ -101,12 +107,38 @@ if st.button("🚀 Predict Crop"):
     prediction = model.predict(new_data)
     predicted_crop = label_encoder.inverse_transform(prediction)
 
-    # Display result
+    # Provide personalized recommendations based on the farming practices
     st.success(f"🌾 **Predicted Crop Type:** {predicted_crop[0]} 🌱")
-    # st.balloons()
 
+    # Show visualization (compare this crop with others)
+    st.subheader("🌾 Crop Comparison")
+    crop_comparison = {
+        "Crop Type": ["Crop 1", "Crop 2", "Crop 3"],  # Example placeholder crops
+        "Expected Yield (kg/ha)": [3500, 2900, 3000],
+        "Water Requirements (mm)": [400, 300, 350]
+    }
+    comparison_df = pd.DataFrame(crop_comparison)
+    st.write(comparison_df)
+
+    # Display farming tips
+    st.subheader("🌿 Farming Tips")
+    if irrigation_method == "Drip":
+        st.write("💧 Drip irrigation is highly efficient, especially for crops requiring moderate water.")
+    elif irrigation_method == "Sprinkler":
+        st.write("💦 Sprinkler irrigation can cover a large area but may be less water-efficient.")
+    else:
+        st.write("🌱 For flood irrigation, ensure water is evenly distributed for optimal crop growth.")
+
+    if fertilizer_type == "Organic":
+        st.write("🌿 Organic fertilizers improve soil health over time and are great for sustainable farming.")
+    elif fertilizer_type == "Chemical":
+        st.write("💥 Chemical fertilizers provide fast results but need to be used carefully to avoid soil degradation.")
+    else:
+        st.write("🌱 Mixed fertilizers can balance the benefits of both organic and chemical options.")
+    
 # Footer 
-st.write("**Developed by Us3 with 💚 for Smart Agriculture 🚜.**")
+st.write("**Developed by Us with 💚 for Smart Agriculture 🚜.**")
+
 
 
 
