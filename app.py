@@ -109,6 +109,7 @@
 # st.write("**Developed by Us3 with 💚 for Smart Agriculture 🚜.**")
 # st.markdown("Stay sustainable, stay productive! 🌍")
 
+
 import streamlit as st
 import pandas as pd
 import requests
@@ -122,16 +123,20 @@ from sklearn.model_selection import train_test_split
 def load_and_preprocess_data():
     file_path = "Crop(Distric level).csv"  # Ensure this is in the same directory as your script
     data = pd.read_csv(file_path)
+    
+    # Clean column names by removing any leading/trailing spaces
+    data.columns = data.columns.str.strip()
+    
     return data
 
 # Load the dataset
 data = load_and_preprocess_data()
 
 # Define feature columns
-feature_columns = ['N', 'P', 'K', 'rainfall', 'temperature', 'humidity', 'pH']
+feature_columns = ['N', 'P', 'K', 'rainfall', 'temperature', 'humidity', 'ph']
 
 # Define target variable
-target = 'crop_type'
+target = 'label'  # Replace 'label' with the actual name of your target column in the dataset
 
 # Model training
 X = data[feature_columns]
@@ -154,10 +159,10 @@ K_input = st.sidebar.number_input("Potassium (K) in Soil", min_value=0, max_valu
 rainfall_input = st.sidebar.number_input("Rainfall (mm)", min_value=0, max_value=500, value=100)
 temperature_input = st.sidebar.number_input("Temperature (°C)", min_value=-10, max_value=50, value=25)
 humidity_input = st.sidebar.number_input("Humidity (%)", min_value=0, max_value=100, value=60)
-pH_input = st.sidebar.number_input("Soil pH", min_value=4.0, max_value=8.0, value=6.5)
+ph_input = st.sidebar.number_input("Soil pH", min_value=4.0, max_value=8.0, value=6.5)
 
 # Weather API Integration (OpenWeather)
-api_key = 'your_api_key'  # Replace this with your actual OpenWeather API key
+api_key = '94695193e8bf48fadf452973b5226770'  # Replace this with your actual OpenWeather API key
 weather_url = f'http://api.openweathermap.org/data/2.5/weather?q={district_input}&appid={api_key}'
 weather_response = requests.get(weather_url)
 weather_data = weather_response.json()
@@ -176,7 +181,7 @@ new_data = pd.DataFrame({
     'rainfall': [rainfall_input],
     'temperature': [temperature_input],
     'humidity': [humidity_input],
-    'pH': [pH_input]
+    'ph': [ph_input]
 })
 
 # Check if required columns exist
